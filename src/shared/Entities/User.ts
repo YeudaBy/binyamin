@@ -7,5 +7,5 @@ export class User extends IdEntity {
     name!: string
 
     @Fields.string()
-    phone!: string
+    email!: string
 }

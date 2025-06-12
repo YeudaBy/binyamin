@@ -1,24 +1,37 @@
-import {Entity, Fields, IdEntity, Relations} from "remult";
+import {Entity, Fields, IdEntity, Relations, repo} from "remult";
 import {Tractate} from "@/shared/Entities/Tractate";
-import {User} from "@/shared/Entities/User";
+import {Log} from "@/shared/Entities/Log";
 
 export enum PageStatus {
     Available,
-    Drafted,
     Taken,
     Completed
 }
 
-@Entity("page", {
-    allowApiCrud: true
+@Entity<Page>("page", {
+    allowApiCrud: true,
+    saved: async (entity, e) => {
+        if (e.fields.byUser.valueChanged()) {
+            console.log(entity.byUser)
+            const lRepo = repo(Log)
+            const full = await e.repository.findId(entity.id, {include: {tractate: true}})
+            const log = await lRepo.insert({
+                text: `${entity.byUserName} קיבל על עצמו לימוד של דף ${entity.indexName} ממסכת ${full?.tractate.name}!`
+            })
+            console.log(log.text)
+        }
+    }
 })
 export class Page extends IdEntity {
 
     @Fields.enum(() => PageStatus)
     pageStatus = PageStatus.Available
 
-    @Relations.toOne(() => User)
-    byUser: User | undefined = undefined
+    @Fields.string()
+    byUser: string | undefined
+
+    @Fields.string()
+    byUserName: string | undefined
 
     @Fields.date()
     takenAt: Date | undefined

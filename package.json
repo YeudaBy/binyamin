@@ -12,7 +12,10 @@
     "@headlessui/react": "^2.2.4",
     "@remixicon/react": "^4.6.0",
     "@tremor/react": "^3.18.7",
+    "framer-motion": "^12.17.0",
+    "motion": "^12.17.0",
     "next": "15.2.4",
+    "next-auth": "^4.24.11",
     "react": "^18",
     "react-dom": "^18",
     "remult": "^3.0.5"

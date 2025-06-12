@@ -3,10 +3,12 @@ import {User} from "@/shared/Entities/User";
 import {Seder, Tractate} from "@/shared/Entities/Tractate";
 import {Page, PageStatus} from "@/shared/Entities/Page";
 import pagesJson from "./pages.json"
+import {getUserOnServer} from "@/shared/auth";
+import {Log} from "@/shared/Entities/Log";
 
 export const api = remultApi({
     admin: true,
-    entities: [User, Tractate, Page],
+    entities: [User, Tractate, Page, Log],
     initApi: async (remult) => {
         console.log("Creating Pages...");
         const pRepo = remult.repo(Page);
@@ -48,7 +50,8 @@ export const api = remultApi({
         }
 
         console.log("All pages and tractates created.");
-    }
+    },
+    getUser: getUserOnServer
 })
 
 function intToHebrewDaf(n: number): string {
