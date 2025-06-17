@@ -6,11 +6,25 @@ import pagesJson from "./pages.json"
 import {getUserOnServer} from "@/shared/auth";
 import {Log} from "@/shared/Entities/Log";
 import { StatsController } from './Stats';
+import { createPostgresConnection } from 'remult/postgres';
+
+// Use a flag to determine if the environment is Vercel production
+const isVercelProduction = process.env.VERCEL_ENV === 'production';
 
 export const api = remultApi({
     admin: true,
     entities: [User, Tractate, Page, Log],
     controllers: [StatsController],
+    dataProvider: isVercelProduction 
+        ? createPostgresConnection({
+            connectionString: process.env.POSTGRES_URL,
+            configuration: {
+                ssl: {
+                    rejectUnauthorized: false
+                }
+            }
+        })
+        : undefined, // Use in-memory db for local dev and other environments
     initApi: async (remult) => {
         console.log("Creating Pages...");
         const pRepo = remult.repo(Page);
