@@ -5,6 +5,7 @@ import {Card, Title} from "@tremor/react";
 import {RiGoogleFill} from "@remixicon/react";
 import {ReactNode, useEffect} from 'react'
 import {remult, UserInfo} from 'remult'
+import Image from "next/image";
 
 export default function Auth({children}: { children: ReactNode }) {
     const session = useSession()
@@ -32,7 +33,7 @@ export function AuthButton() {
                 onClick={() => signOut()}
                 className={"mx-4 max-w-sm m-auto mt-6 flex gap-2 items-center justify-between hover:scale-105 transition-transform cursor-pointer"}>
                 <Title className={"text-xl tracking-wide"}>התנתק</Title>
-                <img src={session.user?.image || ""} alt={session.user?.name || ""} className="w-8 h-8 rounded-full"/>
+                <Image src={session.user?.image || ""} alt={session.user?.name || ""} className="w-8 h-8 rounded-full"/>
             </Card>
         );
     }

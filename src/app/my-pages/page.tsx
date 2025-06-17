@@ -1,58 +1,24 @@
 "use client"
 
-import {useEffect, useState, useMemo} from "react";
+import {useEffect, useMemo, useState} from "react";
 import {Page, PageStatus} from "@/shared/Entities/Page";
 import {repo} from "remult";
 import {useSession} from "next-auth/react";
-import {User} from "@/shared/Entities/User";
 import Auth from "@/ui/auth";
-import {
-    Card,
-    Title,
-    Text,
-    Badge,
-    Icon,
-    Tab,
-    TabList,
-    TabGroup,
-    TabPanels,
-    TabPanel,
-    ProgressBar,
-    Select,
-    SelectItem,
-    Button,
-    Grid,
-    Col,
-    Metric,
-    Flex,
-    DonutChart,
-    Dialog,
-    DialogPanel
-} from "@tremor/react";
-import {
-    RiArrowLeftSLine,
-    RiCheckLine,
-    RiTimeLine,
-    RiSearchLine,
-    RiFilterLine,
-    RiShareLine,
-    RiAddLine,
-    RiStarLine,
-    RiStarFill,
-    RiArrowGoBackLine
-} from "@remixicon/react";
+import {Badge, Button, Card, Dialog, DialogPanel, Icon, ProgressBar, Text, Title} from "@tremor/react";
+import {RiAddLine, RiArrowGoBackLine, RiArrowLeftSLine, RiCheckLine, RiTimeLine} from "@remixicon/react";
 import Link from "next/link";
-import {motion, AnimatePresence} from "framer-motion";
 
 const pRepo = repo(Page)
-const uRepo = repo(User)
 
 // Statistics Component
-const Statistics = ({ stats }: { stats: { total: number; completed: number; inProgress: number; completionRate: number } }) => (
+const Statistics = ({stats}: {
+    stats: { total: number; completed: number; inProgress: number; completionRate: number }
+}) => (
     <>
         <div className="grid grid-cols-3 gap-2 mb-4">
             <Card className="py-2 px-2 text-center">
-                <Text className="text-xs">סה"כ דפים</Text>
+                <Text className="text-xs">סה&#34;כ דפים</Text>
                 <div className="text-xl font-bold">{stats.total}</div>
             </Card>
             <Card className="py-2 px-2 text-center">
@@ -73,9 +39,9 @@ const Statistics = ({ stats }: { stats: { total: number; completed: number; inPr
 );
 
 // Status Filter Component
-const StatusFilter = ({ selectedStatus, onStatusChange }: { 
-    selectedStatus: PageStatus | "all"; 
-    onStatusChange: (status: PageStatus | "all") => void 
+const StatusFilter = ({selectedStatus, onStatusChange}: {
+    selectedStatus: PageStatus | "all";
+    onStatusChange: (status: PageStatus | "all") => void
 }) => {
     const statusChips = [
         {label: "הכל", value: "all" as const},
@@ -89,8 +55,8 @@ const StatusFilter = ({ selectedStatus, onStatusChange }: {
                 <button
                     key={chip.value}
                     className={`px-3 py-1 rounded-full border text-xs transition font-bold ${
-                        selectedStatus === chip.value 
-                            ? "bg-blue-500 text-white border-blue-500" 
+                        selectedStatus === chip.value
+                            ? "bg-blue-500 text-white border-blue-500"
                             : "bg-white text-blue-500 border-blue-300 hover:bg-blue-50"
                     }`}
                     onClick={() => onStatusChange(chip.value)}
@@ -103,26 +69,28 @@ const StatusFilter = ({ selectedStatus, onStatusChange }: {
 };
 
 // Status Badge Component
-const StatusBadge = ({ status }: { status: PageStatus }) => {
+const StatusBadge = ({status}: { status: PageStatus }) => {
     switch (status) {
         case PageStatus.Completed:
-            return <Badge color="green"><span className="flex items-center gap-1">הושלם <RiCheckLine size={"12px"}/></span></Badge>
+            return <Badge color="green"><span className="flex items-center gap-1">הושלם <RiCheckLine
+                size={"12px"}/></span></Badge>
         case PageStatus.Taken:
-            return <Badge color="yellow"><span className="flex items-center gap-1">בתהליך <RiTimeLine size={"12px"}/></span></Badge>
+            return <Badge color="yellow"><span className="flex items-center gap-1">בתהליך <RiTimeLine
+                size={"12px"}/></span></Badge>
         default:
             return null
     }
 }
 
 // Tractate Card Component
-const TractateCard = ({ 
-    tractate, 
-    pages, 
-    onComplete, 
-    onReturn 
-}: { 
-    tractate: string; 
-    pages: Page[]; 
+const TractateCard = ({
+                          tractate,
+                          pages,
+                          onComplete,
+                          onReturn
+                      }: {
+    tractate: string;
+    pages: Page[];
     onComplete: (page: Page) => Promise<void>;
     onReturn: (page: Page) => void;
 }) => (
@@ -136,7 +104,7 @@ const TractateCard = ({
                 <div key={page.id}
                      className="flex items-center justify-between bg-white rounded border border-gray-200 px-3 py-2 mb-2 shadow-sm hover:bg-gray-50 transition">
                     <div className="flex items-center gap-2">
-                        <StatusBadge status={page.pageStatus} />
+                        <StatusBadge status={page.pageStatus}/>
                         <Text className="text-base font-bold text-gray-800">דף {page.indexName}</Text>
                     </div>
                     <div className="flex items-center gap-2">
@@ -147,7 +115,8 @@ const TractateCard = ({
                                     color="emerald"
                                     onClick={async () => await onComplete(page)}
                                 >
-                                    <span className="flex items-center gap-1">סמן כהושלם <RiCheckLine size={"12px"}/></span>
+                                    <span className="flex items-center gap-1">סמן כהושלם <RiCheckLine
+                                        size={"12px"}/></span>
                                 </Button>
                                 <Button
                                     size="xs"
@@ -166,19 +135,19 @@ const TractateCard = ({
 );
 
 // Return Dialog Component
-const ReturnDialog = ({ 
-    page, 
-    onClose, 
-    onConfirm 
-}: { 
-    page: Page | null; 
-    onClose: () => void; 
+const ReturnDialog = ({
+                          page,
+                          onClose,
+                          onConfirm
+                      }: {
+    page: Page | null;
+    onClose: () => void;
     onConfirm: () => Promise<void>;
 }) => (
     <Dialog open={!!page} onClose={onClose}>
         <DialogPanel className="text-center">
             <Title className="mb-2 text-lg">האם להחזיר את הדף?</Title>
-            <Text className="mb-4">הדף יחזור למאגר ויוכל להילקח ע"י אחרים.</Text>
+            <Text className="mb-4">הדף יחזור למאגר ויוכל להילקח ע&#34;י אחרים.</Text>
             <div className="flex gap-4 justify-center mt-4">
                 <Button color="gray" onClick={onClose}>ביטול</Button>
                 <Button color="red" onClick={onConfirm}>החזר דף</Button>
@@ -191,7 +160,6 @@ export default function MyPagesPage() {
     const [pages, setPages] = useState<Page[]>([])
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState<string | null>(null)
-    const [searchQuery, setSearchQuery] = useState("")
     const [selectedStatus, setSelectedStatus] = useState<PageStatus | "all">("all")
     const {data} = useSession()
     const [returnDialog, setReturnDialog] = useState<Page | null>(null)
@@ -219,25 +187,11 @@ export default function MyPagesPage() {
         getByUser()
     }, [data]);
 
-    const formatDate = (date: Date | undefined) => {
-        if (!date) return ""
-        return new Date(date).toLocaleDateString('he-IL', {
-            year: 'numeric',
-            month: 'long',
-            day: 'numeric'
-        })
-    }
-
-    const filteredPages = pages.filter(page => {
-        const matchesStatus = selectedStatus === "all" || page.pageStatus === selectedStatus
-        return matchesStatus
-    })
-
     const stats = useMemo(() => ({
         total: pages.length,
         completed: pages.filter(p => p.pageStatus === PageStatus.Completed).length,
         inProgress: pages.filter(p => p.pageStatus === PageStatus.Taken).length,
-        completionRate: pages.length ? 
+        completionRate: pages.length ?
             (pages.filter(p => p.pageStatus === PageStatus.Completed).length / pages.length) * 100 : 0
     }), [pages])
 
@@ -298,13 +252,6 @@ export default function MyPagesPage() {
         return acc;
     }, {} as Record<string, Page[]>), [pages])
 
-    // סטטוסים לצ'יפים
-    const statusChips = [
-        {label: "הכל", value: "all" as const},
-        {label: "בתהליך", value: PageStatus.Taken},
-        {label: "הושלמו", value: PageStatus.Completed}
-    ];
-
     // סינון לפי סטטוס
     const filteredGroups = useMemo(() => Object.entries(tractateGroups).reduce((acc, [tractate, arr]) => {
         let filtered = arr;
@@ -320,7 +267,8 @@ export default function MyPagesPage() {
             <div className="max-w-3xl mx-auto">
                 <div className="flex items-center gap-4 mb-6">
                     <Link href="/">
-                        <Icon icon={RiArrowLeftSLine} size="xl" className="cursor-pointer hover:scale-110 transition-transform"/>
+                        <Icon icon={RiArrowLeftSLine} size="xl"
+                              className="cursor-pointer hover:scale-110 transition-transform"/>
                     </Link>
                     <Title className="text-3xl">הדפים שלי</Title>
                 </div>
@@ -338,22 +286,23 @@ export default function MyPagesPage() {
                     </div>
                 ) : (
                     <>
-                        <Statistics stats={stats} />
-                        
+                        <Statistics stats={stats}/>
+
                         <Card className="mb-4 text-center py-2 px-2">
                             <Text className="text-base font-medium">{getEncouragementMessage()}</Text>
                         </Card>
 
-                        <StatusFilter 
-                            selectedStatus={selectedStatus} 
-                            onStatusChange={setSelectedStatus} 
+                        <StatusFilter
+                            selectedStatus={selectedStatus}
+                            onStatusChange={setSelectedStatus}
                         />
 
                         {Object.keys(filteredGroups).length === 0 ? (
                             <Card className="text-center py-12">
                                 <Text className="text-lg">אין דפים להצגה</Text>
                                 <Link href="/pages-list">
-                                    <Card className="mt-4 max-w-sm mx-auto hover:scale-105 transition-transform cursor-pointer">
+                                    <Card
+                                        className="mt-4 max-w-sm mx-auto hover:scale-105 transition-transform cursor-pointer">
                                         <Text className="text-lg">לקחת דף</Text>
                                     </Card>
                                 </Link>

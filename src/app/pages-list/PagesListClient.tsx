@@ -2,27 +2,13 @@
 
 import {repo} from "remult";
 import {useCallback, useEffect, useMemo, useState} from "react";
-import {
-    Accordion,
-    AccordionBody,
-    AccordionHeader,
-    AccordionList,
-    Button,
-    Card,
-    Dialog,
-    DialogPanel,
-    Icon,
-    Text,
-    Title
-} from "@tremor/react";
+import {Button, Card, Dialog, DialogPanel, Icon, Text, Title} from "@tremor/react";
 import {Tractate} from "@/shared/Entities/Tractate";
 import {Page, PageStatus} from "@/shared/Entities/Page";
-import {User} from "@/shared/Entities/User";
-import {RiCloseLine, RiArrowRightSLine, RiBookOpenLine, RiCheckLine} from "@remixicon/react";
+import {RiArrowRightSLine, RiBookOpenLine, RiCheckLine, RiCloseLine} from "@remixicon/react";
 import Auth from "@/ui/auth";
 import {useSession} from "next-auth/react";
 import Link from "next/link";
-import { log } from "console";
 
 // Initialize Remult repositories for Page and Tractate entities
 const pRepo = repo(Page)
@@ -39,11 +25,6 @@ interface TractateWithPagesAndCounts {
         total: number;
     };
 }
-
-// Define the structure for mapping seders to tractates
-type SederMap = {
-    [seder: string]: TractateWithPagesAndCounts[];
-};
 
 export default function PagesList() {
     // State to hold all tractates, each with its associated pages and counts
@@ -71,14 +52,14 @@ export default function PagesList() {
         setIsDialogLoading(true);
         try {
             const pages = await pRepo.find({
-                where: { tractate: tractateInfo.tractate },
-                orderBy: { index: "asc" }
+                where: {tractate: tractateInfo.tractate},
+                orderBy: {index: "asc"}
             });
-            
+
             // Update the specific tractate in the state with its newly fetched pages
-            setTractates(currentTractates => 
-                currentTractates.map(t => 
-                    t.tractate.id === tractateInfo.tractate.id ? { ...t, pages } : t
+            setTractates(currentTractates =>
+                currentTractates.map(t =>
+                    t.tractate.id === tractateInfo.tractate.id ? {...t, pages} : t
                 )
             );
         } catch (error) {
@@ -96,20 +77,20 @@ export default function PagesList() {
             setErrorMessage(null);
             try {
                 // Fetch all tractates
-                const fetchedTractates = await tRepo.find({ orderBy: { seder: "asc" } });
+                const fetchedTractates = await tRepo.find({orderBy: {seder: "asc"}});
 
                 // For each tractate, fetch its page counts
                 const tractatesWithCounts = await Promise.all(
                     fetchedTractates.map(async (t) => {
-                        const available = await pRepo.count({ tractate: t, pageStatus: PageStatus.Available });
-                        const taken = await pRepo.count({ tractate: t, pageStatus: PageStatus.Taken });
-                        const completed = await pRepo.count({ tractate: t, pageStatus: PageStatus.Completed });
+                        const available = await pRepo.count({tractate: t, pageStatus: PageStatus.Available});
+                        const taken = await pRepo.count({tractate: t, pageStatus: PageStatus.Taken});
+                        const completed = await pRepo.count({tractate: t, pageStatus: PageStatus.Completed});
                         const total = available + taken + completed;
-                        
-                        return { 
-                            tractate: t, 
+
+                        return {
+                            tractate: t,
                             pages: [], // Pages will be fetched on demand
-                            counts: { available, taken, completed, total }
+                            counts: {available, taken, completed, total}
                         };
                     })
                 );
@@ -141,19 +122,7 @@ export default function PagesList() {
     const memoizedSelectedTractate = useMemo(() => {
         if (!selectedTractate) return undefined;
         return tractates.find(t => t.tractate.id === selectedTractate.tractate.id);
-    }, [selectedTractate, tractates]);
-
-    // Function to update a page's status locally within the tractates state
-    const updatePageStatusLocally = useCallback((pageId: string, newStatus: PageStatus, byUser?: string) => {
-        setTractates(prevTractates =>
-            prevTractates.map(tractateWithPages => ({
-                ...tractateWithPages,
-                pages: tractateWithPages.pages.map(page =>
-                    page.id === pageId ? page.assign({ pageStatus: newStatus, byUser }) : page
-                )
-            }))
-        );
-    }, []);
+    }, [selectedTractate, tractates])
 
     // Callback for when a single page is selected/deselected in the dialog
     const onPageSelected = useCallback(async (page: Page) => {
@@ -235,7 +204,7 @@ export default function PagesList() {
 
     const hasPagesTakenByCurrentUser = useMemo(() => {
         if (!memoizedSelectedTractate) return false;
-        return memoizedSelectedTractate.pages.some(p => 
+        return memoizedSelectedTractate.pages.some(p =>
             p.pageStatus === PageStatus.Taken && p.byUser === data?.user?.id
         );
     }, [memoizedSelectedTractate, data?.user?.id]);
@@ -245,8 +214,10 @@ export default function PagesList() {
             <div className="min-h-screen flex flex-col items-center bg-fixed">
                 {/* Full Screen Loading Overlay */}
                 {isSaving && (
-                    <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999]">
-                        <div className="glass-effect rounded-2xl p-8 shadow-xl border border-blue-100 flex flex-col items-center">
+                    <div
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-[9999]">
+                        <div
+                            className="glass-effect rounded-2xl p-8 shadow-xl border border-blue-100 flex flex-col items-center">
                             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mb-4"></div>
                             <div className="text-blue-800 font-heading text-xl">שומר דפים...</div>
                             <div className="text-blue-600 font-body text-sm mt-2">אנא המתן, אל תצא מהדף</div>
@@ -256,15 +227,18 @@ export default function PagesList() {
 
                 {/* Header */}
                 <div className="w-full max-w-4xl px-2 md:px-0 flex flex-col gap-6 mt-6 mb-8">
-                    <div className="glass-effect rounded-2xl p-6 md:p-8 shadow-xl border border-blue-100 flex flex-col items-center text-center">
+                    <div
+                        className="glass-effect rounded-2xl p-6 md:p-8 shadow-xl border border-blue-100 flex flex-col items-center text-center">
                         <Link href="/" className="self-start mb-4 text-blue-600 hover:text-blue-800 transition-colors">
-                            <Icon icon={RiArrowRightSLine} size="lg" />
+                            <Icon icon={RiArrowRightSLine} size="lg"/>
                         </Link>
                         <Icon icon={RiBookOpenLine} size="xl" className="mb-4 text-blue-600"/>
-                        <Title className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mb-4 font-heading">
+                        <Title
+                            className="text-4xl md:text-5xl font-bold tracking-tight bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mb-4 font-heading">
                             לקיחת דפים
                         </Title>
-                        <div className="text-lg md:text-xl font-light tracking-wide text-blue-900 leading-snug font-body">
+                        <div
+                            className="text-lg md:text-xl font-light tracking-wide text-blue-900 leading-snug font-body">
                             לעילוי נשמת ידידינו
                             <span className="font-extrabold"> בנימין </span>
                             יעבץ בן
@@ -276,7 +250,8 @@ export default function PagesList() {
                     {/* Quick Navigation */}
                     {!isLoading && Object.keys(sederMap).length > 0 && (
                         <Card className="glass-effect rounded-2xl p-6 shadow-xl border border-blue-100">
-                            <h3 className="text-lg font-semibold text-blue-800 mb-4 font-heading text-center">דילוג מהיר לסדר</h3>
+                            <h3 className="text-lg font-semibold text-blue-800 mb-4 font-heading text-center">דילוג מהיר
+                                לסדר</h3>
                             <div className="flex flex-wrap justify-center gap-2">
                                 {Object.keys(sederMap).map((sederName) => (
                                     <Button
@@ -285,7 +260,7 @@ export default function PagesList() {
                                         className="bg-blue-100 text-blue-700 hover:bg-blue-200 font-body text-sm px-3 py-1"
                                         onClick={() => {
                                             const element = document.getElementById(`seder-${sederName}`);
-                                            element?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                            element?.scrollIntoView({behavior: 'smooth', block: 'start'});
                                         }}
                                     >
                                         {sederName}
@@ -306,7 +281,8 @@ export default function PagesList() {
 
                     {/* Error State */}
                     {errorMessage && (
-                        <Card className="glass-effect rounded-2xl p-6 shadow-xl border border-red-200 bg-red-50/80 text-center">
+                        <Card
+                            className="glass-effect rounded-2xl p-6 shadow-xl border border-red-200 bg-red-50/80 text-center">
                             <div className="text-red-700 font-body">
                                 {errorMessage}
                             </div>
@@ -325,30 +301,35 @@ export default function PagesList() {
                     {!isLoading && tractates.length > 0 && (
                         <div className="space-y-6">
                             {Object.entries(sederMap).map(([sederName, tractateList]) => (
-                                <Card key={sederName} id={`seder-${sederName}`} className="glass-effect rounded-2xl p-6 md:p-8 shadow-xl border border-blue-100 scroll-mt-6">
+                                <Card key={sederName} id={`seder-${sederName}`}
+                                      className="glass-effect rounded-2xl p-6 md:p-8 shadow-xl border border-blue-100 scroll-mt-6">
                                     <h2 className="text-2xl font-semibold text-blue-800 mb-6 font-heading text-center">{sederName}</h2>
                                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                         {tractateList.map((t) => {
-                                            const { total, available, taken, completed } = t.counts;
+                                            const {total, available, taken, completed} = t.counts;
 
                                             return (
                                                 <Card key={t.tractate.id}
                                                       className="rounded-2xl p-4">
                                                     <div className="flex flex-col h-full">
-                                                        <Title className="text-lg font-bold text-blue-800 mb-3 font-heading text-right">{t.tractate.name}</Title>
-                                                        <div className="space-y-1 text-sm text-blue-700 mb-4 flex-grow font-body text-right">
+                                                        <Title
+                                                            className="text-lg font-bold text-blue-800 mb-3 font-heading text-right">{t.tractate.name}</Title>
+                                                        <div
+                                                            className="space-y-1 text-sm text-blue-700 mb-4 flex-grow font-body text-right">
                                                             <div>סה״כ דפים: {total}</div>
-                                                            {available > 0 && <div className="text-green-600">פנויים: {available}</div>}
-                                                            {taken > 0 && <div className="text-amber-600">נלקחו: {taken}</div>}
-                                                            {completed > 0 && <div className="text-emerald-600">הושלמו: {completed}</div>}
+                                                            {available > 0 && <div
+                                                                className="text-green-600">פנויים: {available}</div>}
+                                                            {taken > 0 &&
+                                                                <div className="text-amber-600">נלקחו: {taken}</div>}
+                                                            {completed > 0 && <div
+                                                                className="text-emerald-600">הושלמו: {completed}</div>}
                                                         </div>
                                                         <Button
                                                             size="sm"
                                                             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-body"
-                                                            onClick={(e) => {
+                                                            onClick={() => {
                                                                 openTractateDialog(t);
                                                                 console.log(t);
-                                                                
                                                             }}
                                                         >
                                                             צפה בדפים
@@ -366,10 +347,11 @@ export default function PagesList() {
 
                 {/* Dialog for displaying pages within a selected tractate */}
                 <Dialog open={!!memoizedSelectedTractate} onClose={() => setSelectedTractate(undefined)} static>
-                    <DialogPanel className="relative text-start mt-14 flex flex-col max-h-[80vh] glass-effect rounded-2xl border border-blue-100">
+                    <DialogPanel
+                        className="relative text-start mt-14 flex flex-col max-h-[80vh] glass-effect rounded-2xl border border-blue-100">
                         <Icon onClick={() => setSelectedTractate(undefined)} icon={RiCloseLine}
                               className="bg-blue-600 text-white rounded-full p-2 absolute -top-2 -left-2 cursor-pointer shadow-lg hover:bg-blue-700 transition-colors"/>
-                        
+
                         <div className="p-6 border-b border-blue-100">
                             <h3 className="text-2xl font-bold text-blue-800 font-heading text-right">
                                 {memoizedSelectedTractate?.tractate.name}
@@ -385,13 +367,14 @@ export default function PagesList() {
                                 </Button>
                             </div>
                         </div>
-                        
+
                         {isDialogLoading ? (
                             <div className="flex justify-center items-center h-48">
                                 <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
                             </div>
                         ) : (
-                            <div className="grid grid-cols-[repeat(auto-fill,minmax(60px,1fr))] gap-3 overflow-y-auto p-6">
+                            <div
+                                className="grid grid-cols-[repeat(auto-fill,minmax(60px,1fr))] gap-3 overflow-y-auto p-6">
                                 {memoizedSelectedTractate?.pages
                                     .sort((a, b) => a.index - b.index)
                                     .map(page => (
@@ -406,7 +389,7 @@ export default function PagesList() {
                                     ))}
                             </div>
                         )}
-                        
+
                         {/* Action Buttons */}
                         <div className="flex flex-col gap-3 p-6 border-t border-blue-100 bg-white/90 rounded-b-2xl">
                             {hasPagesTakenByCurrentUser && (

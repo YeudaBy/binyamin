@@ -5,10 +5,12 @@ import {Page, PageStatus} from "@/shared/Entities/Page";
 import pagesJson from "./pages.json"
 import {getUserOnServer} from "@/shared/auth";
 import {Log} from "@/shared/Entities/Log";
+import { StatsController } from './Stats';
 
 export const api = remultApi({
     admin: true,
     entities: [User, Tractate, Page, Log],
+    controllers: [StatsController],
     initApi: async (remult) => {
         console.log("Creating Pages...");
         const pRepo = remult.repo(Page);
