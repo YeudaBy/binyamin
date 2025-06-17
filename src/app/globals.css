@@ -2,41 +2,297 @@
 @tailwind components;
 @tailwind utilities;
 
+html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden;
+}
+
 :root {
-    --background: #ffffff;
-    --foreground: #171717;
+    --background: linear-gradient(to bottom right, #EFF6FF, #DBEAFE);
+    --foreground: #1E3A8A;
+    --font-heebo: var(--font-heebo);
+    --font-noto-serif: var(--font-noto-serif);
 }
 
 @media (prefers-color-scheme: dark) {
     :root {
-        --background: #0a0a0a;
-        --foreground: #ededed;
+        --background: linear-gradient(to bottom right, #1E3A8A, #1E40AF);
+        --foreground: #EFF6FF;
     }
 }
 
 body {
     color: var(--foreground);
     background: var(--background);
-    font-family: Arial, Helvetica, sans-serif;
-}
-
-.body {
+    font-family: var(--font-heebo), Arial, Helvetica, sans-serif;
+    min-height: 100vh;
     position: relative;
     z-index: 1;
-    width: 100vw;
+    text-align: right;
+    direction: rtl;
 }
 
-.body::before {
+body::before {
     content: "";
-    position: absolute;
+    position: fixed;
     inset: 0;
-    background: linear-gradient(to bottom, transparent, #131A2B), url("/books.png") center/cover no-repeat;
-    filter: blur(3px);
+    background: linear-gradient(to bottom, rgba(239, 246, 255, 0.8), rgba(219, 234, 254, 0.8)), url("/books.png") center/cover no-repeat;
+    backdrop-filter: blur(8px);
     z-index: -1;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
 }
 
 @layer utilities {
     .text-balance {
         text-wrap: balance;
     }
+    
+    .glass-effect {
+        background: rgba(255, 255, 255, 0.8);
+        backdrop-filter: blur(8px);
+        border: 1px solid rgba(219, 234, 254, 0.5);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
+    }
+    
+    .glass-effect-hover {
+        background: rgba(255, 255, 255, 0.9);
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+    
+    .log-dark {
+        background: linear-gradient(to bottom right, #1e3a8a, #1e40af 80%);
+        color: #e0e7ff;
+        border: 1px solid #1e40af;
+        box-shadow: 0 8px 30px rgba(30, 58, 138, 0.15);
+    }
+    
+    .font-heading {
+        font-family: var(--font-noto-serif), Georgia, serif;
+    }
+    
+    .font-body {
+        font-family: var(--font-heebo), Arial, sans-serif;
+    }
+    
+    .btn-subtle {
+        position: relative;
+        overflow: hidden;
+        transition: background 0.25s cubic-bezier(0.4,0,0.2,1);
+        background: rgba(255,255,255,0.7);
+    }
+    .btn-subtle:hover {
+        background: rgba(219,234,254,0.85);
+    }
+    .btn-subtle .btn-underline {
+        position: absolute;
+        left: 20%;
+        right: 20%;
+        bottom: 12px;
+        height: 2px;
+        background: linear-gradient(90deg, #38bdf8 0%, #2563eb 100%);
+        border-radius: 2px;
+        opacity: 0;
+        transform: translateY(6px) scaleX(0.7);
+        transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+        pointer-events: none;
+    }
+    .btn-subtle:hover .btn-underline {
+        opacity: 1;
+        transform: translateY(0) scaleX(1);
+    }
+    .btn-subtle .btn-icon {
+        transition: filter 0.3s, opacity 0.3s;
+        filter: grayscale(0.2) brightness(0.95);
+        opacity: 0.92;
+    }
+    .btn-subtle:hover .btn-icon {
+        filter: grayscale(0) brightness(1.1);
+        opacity: 1;
+    }
+    .btn-glass {
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4,0,0.2,1);
+        background: rgba(255,255,255,0.4);
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+    
+    .btn-glass::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, #3b82f6, #06b6d4, #8b5cf6, #3b82f6);
+        background-size: 300% 300%;
+        border-radius: inherit;
+        z-index: -1;
+        opacity: 0;
+        animation: borderRun 3s linear infinite;
+        transition: opacity 0.3s ease;
+    }
+    
+    .btn-glass:hover::before {
+        opacity: 1;
+    }
+    
+    .btn-glass:hover {
+        background: rgba(255,255,255,0.6);
+        backdrop-filter: blur(16px);
+        border-color: rgba(255,255,255,0.5);
+    }
+    
+    @keyframes borderRun {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+    
+    .btn-glass .btn-icon {
+        transition: filter 0.3s, opacity 0.3s;
+        filter: grayscale(0.1) brightness(0.95);
+        opacity: 0.9;
+    }
+    
+    .btn-glass:hover .btn-icon {
+        filter: grayscale(0) brightness(1.05);
+        opacity: 1;
+    }
+    
+    .btn-animate {
+        transition: all 0.35s cubic-bezier(0.4,0,0.2,1);
+        will-change: transform, box-shadow, background, border-color, color;
+    }
+    .btn-animate:hover {
+        transform: scale(1.045) translateY(-2px) rotate(-0.5deg);
+        box-shadow: 0 8px 32px 0 rgba(30,64,175,0.18), 0 1.5px 8px 0 rgba(0,0,0,0.08);
+        border-color: #2563eb;
+        background-position: right center;
+        filter: brightness(1.08) saturate(1.15);
+    }
+    .btn-gradient-animate {
+        background-size: 200% 200%;
+        background-position: left center;
+        transition: background-position 0.5s cubic-bezier(0.4,0,0.2,1);
+    }
+    .btn-gradient-animate:hover {
+        background-position: right center;
+    }
+    .btn-glow:hover {
+        box-shadow: 0 0 0 4px #60a5fa33, 0 8px 32px 0 rgba(30,64,175,0.18);
+    }
+    .btn-icon-animate {
+        transition: color 0.3s, filter 0.3s, transform 0.3s;
+    }
+    .btn-icon-animate:hover {
+        color: #1e40af;
+        filter: drop-shadow(0 0 6px #60a5fa88);
+        transform: scale(1.15) rotate(-4deg);
+    }
+    
+    .btn-border-draw {
+        position: relative;
+        background: rgba(255,255,255,0.15);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.2);
+        transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+    }
+    
+    .btn-border-draw:hover {
+        background: rgba(255,255,255,0.95);
+        backdrop-filter: blur(2px);
+        border-color: rgba(255,255,255,0.4);
+    }
+    
+    .btn-border-draw::after {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        border: 2px solid #3b82f6;
+        border-radius: inherit;
+        opacity: 0;
+        border-top-color: transparent;
+        border-right-color: transparent;
+        border-bottom-color: transparent;
+        border-left-color: transparent;
+        transition: all 0.6s ease;
+    }
+    
+    .btn-border-draw:hover::after {
+        opacity: 1;
+        border-top-color: #3b82f6;
+        border-right-color: #3b82f6;
+        border-bottom-color: #3b82f6;
+        border-left-color: #3b82f6;
+        animation: drawBorder 0.6s ease-in-out;
+    }
+    
+    @keyframes drawBorder {
+        0% {
+            border-top-color: #3b82f6;
+            border-right-color: transparent;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+        }
+        25% {
+            border-top-color: #3b82f6;
+            border-right-color: #3b82f6;
+            border-bottom-color: transparent;
+            border-left-color: transparent;
+        }
+        50% {
+            border-top-color: #3b82f6;
+            border-right-color: #3b82f6;
+            border-bottom-color: #3b82f6;
+            border-left-color: transparent;
+        }
+        100% {
+            border-top-color: #3b82f6;
+            border-right-color: #3b82f6;
+            border-bottom-color: #3b82f6;
+            border-left-color: #3b82f6;
+        }
+    }
+    
+    .btn-border-draw .btn-icon {
+        transition: filter 0.3s, opacity 0.3s;
+        filter: grayscale(0.1) brightness(0.95);
+        opacity: 0.9;
+    }
+    
+    .btn-border-draw:hover .btn-icon {
+        filter: grayscale(0) brightness(1.05);
+        opacity: 1;
+    }
+}
+
+.tab-curve-connector::before,
+.tab-curve-connector::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border-radius: 100%;
+}
+
+.tab-curve-connector::before {
+    left: -20px;
+    box-shadow: 8px 8px 0 6px #F9FAFB; /* --tw-bg-gray-50 */
+}
+
+.tab-curve-connector::after {
+    right: -20px;
+    box-shadow: -8px 8px 0 6px #F9FAFB; /* --tw-bg-gray-50 */
 }

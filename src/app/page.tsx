@@ -5,7 +5,7 @@ import Link from "next/link";
 import {useEffect, useState} from "react";
 import {repo} from "remult";
 import {Page, PageStatus} from "@/shared/Entities/Page";
-import {RiArrowLeftSLine, RiCandleFill, RiShareFill} from "@remixicon/react";
+import {RiArrowLeftSLine, RiCandleFill, RiShareFill, RiBook2Line, RiUser3Line, RiInformationLine} from "@remixicon/react";
 import {AnimatePresence, motion} from "framer-motion";
 import {Log} from "@/shared/Entities/Log";
 
@@ -24,67 +24,78 @@ export default function Home() {
     }, []);
 
     return (
-        <div className="bg-tremor-brand-muted/20 h-screen">
-            <div className={"py-6"}>
+        <div className="min-h-screen flex flex-col items-center bg-fixed">
+            <div className="w-full max-w-2xl px-2 md:px-0 flex flex-col gap-8 mt-6 mb-8">
+                <div className="glass-effect rounded-2xl p-6 md:p-10 mb-2 shadow-xl border border-blue-100 flex flex-col items-center text-center">
+                    <Icon icon={RiCandleFill} size="xl" className="mb-2 text-blue-600"/>
+                    <Title className="text-5xl md:text-7xl font-extrabold tracking-tight bg-gradient-to-r from-blue-600 to-blue-800 bg-clip-text text-transparent mb-2 font-heading text-center">סיום הש״ס</Title>
+                    <div className="text-lg md:text-2xl font-light tracking-wide text-blue-900 leading-snug font-body text-center">
+                        לעילוי נשמת ידידינו
+                        <span className="font-extrabold"> בנימין </span>
+                        יעבץ בן
+                        <span className="font-extrabold"> אפרים פישל </span>
+                        זצ״ל
+                    </div>
+                </div>
 
-                <Icon icon={RiCandleFill} size={"xl"} className={"text-center scale-150 w-full"}/>
+                <div className="glass-effect rounded-2xl p-6 md:p-10 shadow-xl border border-blue-100 flex flex-col items-center">
+                    <DonutChart
+                        className="my-4"
+                        showAnimation
+                        noDataText={"No data yet"}
+                        data={[
+                            { name: "נלקחו", value: taken },
+                            { name: "הסתיימו", value: completed },
+                            { name: "זמינים", value: available }
+                        ]}
+                        variant="donut"
+                        valueFormatter={n => `${n} דפים`}
+                    />
+                </div>
 
-                <Title className={"text-center text-7xl tracking-wide"}>סיום הש״ס</Title>
-                <Title className={"text-center text-3xl font-light tracking-wide mx-8"}>
-                    לעילוי נשמת ידידינו
-                    <span className={"font-extrabold"}> בנימין </span>
-                    יעבץ בן
-                    <span className={"font-extrabold"}> אפרים פישל </span>
-                    זצ״ל
-                </Title>
+                <div className="flex flex-col gap-6 w-full">
+                    <Link href={"/pages-list"}>
+                        <Card className="rounded-2xl p-6 flex gap-4 items-center justify-between shadow-lg cursor-pointer btn-border-draw">
+                            <div className="flex items-center gap-3">
+                                <Icon icon={RiBook2Line} size={"xl"} className="text-blue-600 btn-icon"/>
+                                <span className="text-2xl font-bold text-blue-800 font-body text-right">לקיחת דפים</span>
+                            </div>
+                            <Icon size={"lg"} icon={RiArrowLeftSLine} className="text-blue-400 btn-icon"/>
+                        </Card>
+                    </Link>
+                    <Link href={"/my-pages"}>
+                        <Card className="rounded-2xl p-6 flex gap-4 items-center justify-between shadow-md cursor-pointer btn-border-draw">
+                            <div className="flex items-center gap-3">
+                                <Icon icon={RiUser3Line} size={"xl"} className="text-cyan-600 btn-icon"/>
+                                <span className="text-2xl font-semibold text-cyan-800 font-body text-right">הדפים שלי</span>
+                            </div>
+                            <Icon size={"lg"} icon={RiArrowLeftSLine} className="text-cyan-400 btn-icon"/>
+                        </Card>
+                    </Link>
+                    <Card 
+                        onClick={() => navigator.share({url: location.href})} 
+                        className="rounded-full p-4 flex items-center justify-center shadow-md cursor-pointer w-16 h-16 mx-auto btn-border-draw"
+                        aria-label="שתף את הפרויקט"
+                    >
+                        <Icon size={"xl"} icon={RiShareFill} className="text-blue-500 btn-icon"/>
+                    </Card>
+                    <Link href={"/about"}>
+                        <Card className="rounded-2xl p-4 flex gap-3 items-center justify-center shadow-md cursor-pointer btn-border-draw">
+                            <Icon icon={RiInformationLine} size={"lg"} className="text-blue-400 btn-icon"/>
+                            <span className="text-lg font-medium text-blue-700 font-body text-right">מידע על הפרויקט</span>
+                        </Card>
+                    </Link>
+                </div>
             </div>
-
-            <DonutChart
-                className={"my-4 text-gray-200"}
-                showAnimation
-                noDataText={"No data yet"}
-                data={[
-                    {
-                        name: "נלקחו",
-                        value: taken
-                    }, {
-                        name: "הסתיימו",
-                        value: completed
-                    }, {
-                        name: "זמינים",
-                        value: available
-                    }
-                ]}
-                variant="donut"
-                valueFormatter={n => `${n} דפים`}
-            />
-
-
-            <Link href={"/pages-list"}>
-                <Card
-                    className={"mx-4 max-w-sm m-auto mt-6 flex gap-2 items-center justify-between hover:scale-105 transition-transform"}>
-                    <Title className={"text-2xl tracking-wide"}>לקיחת דפים</Title>
-                    <Icon size={"lg"} icon={RiArrowLeftSLine}/>
-                </Card>
-            </Link>
-            <Link href={"/my-pages"}>
-                <Card
-                    className={"mx-4 max-w-sm m-auto mt-6 flex gap-2 items-center justify-between hover:scale-105 transition-transform"}>
-                    <Title className={"text-2xl tracking-wide"}>הדפים שלי</Title>
-                    <Icon size={"lg"} icon={RiArrowLeftSLine}/>
-                </Card>
-            </Link>
-            <Card onClick={() => navigator.share({url: location.href})}
-                  className={"mx-4 bg-tremor-background-emphasis max-w-sm m-auto mt-6 flex gap-2 items-center justify-between hover:scale-105 transition-transform cursor-pointer"}>
-                <Title className={"text-xl tracking-wide font-extrabold text-tremor-border"}>שתף</Title>
-                <Icon size={"xs"} icon={RiShareFill} color={"white"}/>
-            </Card>
-
-            <EventLog/>
+            <div className="w-full max-w-2xl px-2 md:px-0 mb-8">
+                <div className="glass-effect rounded-2xl p-6 md:p-8 mt-10 shadow-xl border border-blue-100 text-center">
+                    <h3 className="text-lg font-semibold text-blue-800 mb-4 font-heading text-center">עדכונים אחרונים</h3>
+                    <EventLog/>
+                </div>
+            </div>
         </div>
     );
 }
-
 
 export function EventLog() {
     const [events, setEvents] = useState<Log[]>();
@@ -97,7 +108,7 @@ export function EventLog() {
         lRepo.find({
             where: {show: true},
             limit: 50,
-            orderBy: {createdAt: "asc"},
+            orderBy: {createdAt: "desc"},
         }).then(setEvents);
     }, []);
 
@@ -125,16 +136,16 @@ export function EventLog() {
 
         const nextIndexTimeout = setTimeout(() => {
             setIndex((prev) => (prev + 1) % events.length);
-        }, full.length * typingSpeed + 1000);
+        }, full.length * typingSpeed + 2000);
 
         return () => clearTimeout(nextIndexTimeout);
     }, [index, events]);
 
     if (!events) {
         return (
-            <div className="w-full text-center py-6 h-12">
-                <div className="text-lg font-medium text-gray-500 animate-pulse">
-                    טוען אירועים...
+            <div className="py-4 min-h-[60px] flex items-center justify-center">
+                <div className="text-base text-blue-600 animate-pulse">
+                    טוען עדכונים...
                 </div>
             </div>
         );
@@ -142,27 +153,27 @@ export function EventLog() {
 
     if (events.length === 0) {
         return (
-            <div className="w-full text-center py-6 h-12">
-                <div className="text-lg font-medium text-gray-500">
-                    אין אירועים זמינים
+            <div className="py-4 min-h-[60px] flex items-center justify-center">
+                <div className="text-base text-blue-700">
+                    אין עדכונים זמינים
                 </div>
             </div>
         );
     }
 
     return (
-        <div className="w-full text-center py-6 h-12">
+        <div className="py-4 min-h-[60px] flex items-center justify-center">
             <AnimatePresence mode="wait">
                 <motion.div
                     key={index}
-                    initial={{opacity: 0, y: 10}}
+                    initial={{opacity: 0, y: 15}}
                     animate={{opacity: 1, y: 0}}
-                    exit={{opacity: 0, y: -10}}
-                    transition={{duration: 0.3}}
-                    className="text-base font-medium text-gray-200 whitespace-pre-wrap"
+                    exit={{opacity: 0, y: -15}}
+                    transition={{duration: 0.5, ease: "easeInOut"}}
+                    className="text-base font-medium text-blue-800 leading-relaxed max-w-lg text-center"
                 >
                     {visibleText}
-                    <span className="animate-pulse">▍</span>
+                    <span className="animate-pulse text-blue-500 ml-1">▍</span>
                 </motion.div>
             </AnimatePresence>
         </div>
