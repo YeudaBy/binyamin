@@ -11,6 +11,7 @@ export enum PageStatus {
 @Entity<Page>("page", {
     allowApiCrud: true,
     saved: async (entity, e) => {
+        if (entity.isNew()) return 
         if (e.fields.byUser.valueChanged()) {
             console.log(entity.byUser)
             const lRepo = repo(Log)

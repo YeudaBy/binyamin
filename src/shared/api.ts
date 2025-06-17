@@ -1,10 +1,10 @@
-import {remultApi} from 'remult/remult-next'
-import {User} from "@/shared/Entities/User";
-import {Seder, Tractate} from "@/shared/Entities/Tractate";
-import {Page, PageStatus} from "@/shared/Entities/Page";
+import { remultApi } from 'remult/remult-next'
+import { User } from "@/shared/Entities/User";
+import { Seder, Tractate } from "@/shared/Entities/Tractate";
+import { Page, PageStatus } from "@/shared/Entities/Page";
 import pagesJson from "./pages.json"
-import {getUserOnServer} from "@/shared/auth";
-import {Log} from "@/shared/Entities/Log";
+import { getUserOnServer } from "@/shared/auth";
+import { Log } from "@/shared/Entities/Log";
 import { StatsController } from './Stats';
 import { createPostgresConnection } from 'remult/postgres';
 
@@ -15,26 +15,33 @@ export const api = remultApi({
     admin: true,
     entities: [User, Tractate, Page, Log],
     controllers: [StatsController],
-    dataProvider: isVercelProduction 
-        ? createPostgresConnection({
-            connectionString: process.env.POSTGRES_URL,
-            configuration: {
-                ssl: {
-                    rejectUnauthorized: false
-                }
-            }
-        })
-        : undefined, // Use in-memory db for local dev and other environments
+    // dataProvider:  createPostgresConnection({
+    //         connectionString: process.env.POSTGRES_URL,
+    //         configuration: {
+    //             ssl: {
+    //                 rejectUnauthorized: false
+    //             }
+    //         }
+    //     }),
     initApi: async (remult) => {
         console.log("Creating Pages...");
         const pRepo = remult.repo(Page);
         const tRepo = remult.repo(Tractate);
 
         const pagesCount = await pRepo.count();
-        if (pagesCount > 0) {
+        if (pagesCount == 2696) {
             console.log("Pages existed", pagesCount);
             return;
         }
+
+        console.log("Deleting pages...");
+        for await (const page of pRepo.query()) {
+            page.delete()
+        }
+        for await (const tractate of tRepo.query()) {
+            tractate.delete()
+        }
+
 
         const seders = Object.keys(pagesJson) as Seder[];
 
@@ -50,7 +57,7 @@ export const api = remultApi({
                     seder: sederKey,
                 });
 
-                const pagesToCreate = Array.from({length: numPages - 1}, (_, i) => {
+                const pagesToCreate = Array.from({ length: numPages - 1 }, (_, i) => {
                     return pRepo.insert({
                         index: i,
                         indexName: intToHebrewDaf(i + 2),
